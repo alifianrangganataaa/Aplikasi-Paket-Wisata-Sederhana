@@ -5,8 +5,8 @@ from pelanggan import Pelanggan
 # List penyimpan object paket wisata
 daftar_paket = []
 
-# Membuat 1 object pelanggan
-pelanggan = Pelanggan("Budi", "081234567890")
+# List penyimpan object pelanggan
+daftar_pelanggan = []
 
 
 # Mencari paket berdasarkan nama
@@ -14,6 +14,15 @@ def cari_by_nama(nama):
     for paket in daftar_paket:
         if paket.get_nama().lower() == nama.lower():
             return paket
+    return None
+
+
+# Mencari pelanggan berdasarkan nama
+def cari_pelanggan(nama):
+    for pelanggan in daftar_pelanggan:
+        if pelanggan.get_nama().lower() == nama.lower():
+            return pelanggan
+    return None
 
 
 # Menu 1: Tambah data
@@ -67,21 +76,40 @@ def cek_status():
         print(paket.get_nama(), ":", paket.cek_status())
 
 
-# Menu 6: Pelanggan memesan paket
+# Menu 6: Input pelanggan + pesan paket (bisa lebih dari satu)
 def pesan():
-    paket = cari_by_nama(input("Nama paket yang dipesan: "))
-    if paket and pelanggan.pesan_paket(paket):
-        print("Pemesanan berhasil!")
-    else:
-        print("Pemesanan gagal (paket tidak ada / penuh).")
+    # Input data pelanggan
+    nama = input("Nama pelanggan : ")
+    telepon = input("No. telepon    : ")
+
+    # Pakai pelanggan lama jika sudah ada, kalau belum buat object baru
+    pelanggan = cari_pelanggan(nama)
+    if pelanggan is None:
+        pelanggan = Pelanggan(nama, telepon)
+        daftar_pelanggan.append(pelanggan)
+
+    # Ulangi pemesanan selama pelanggan masih mau memesan
+    while True:
+        paket = cari_by_nama(input("Nama paket yang dipesan: "))
+        if paket and pelanggan.pesan_paket(paket):
+            print("Pemesanan berhasil!")
+        else:
+            print("Pemesanan gagal (paket tidak ada / penuh).")
+        lagi = input("Pesan paket lain? (y/n): ")
+        if lagi.lower() != "y":
+            break
 
 
-# Menu 7: Tampilkan pesanan pelanggan
+# Menu 7: Tampilkan pesanan per pelanggan
 def lihat_pesanan():
-    pelanggan.tampilkan_pesanan()
+    pelanggan = cari_pelanggan(input("Nama pelanggan: "))
+    if pelanggan:
+        pelanggan.tampilkan_pesanan()
+    else:
+        print("Pelanggan tidak ditemukan.")
 
 
-# Dictionary menu: pilihan -> fungsi 
+# Dictionary menu untuk mempermudah pemanggilan fungsi
 menu = {
     "1": tambah,
     "2": tampilkan,
